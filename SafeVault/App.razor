@@ -1,0 +1,36 @@
+﻿<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        @if (routeData.PageType == null)
+        {
+            <RedirectToLogin />
+        }
+        else
+        {
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        }
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    private class RedirectToLogin : IComponent
+    {
+        [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+
+        public void Attach(RenderHandle renderHandle)
+        {
+            NavigationManager.NavigateTo("login");
+        }
+
+        public Task SetParametersAsync(ParameterView parameters)
+        {
+            return Task.CompletedTask;
+        }
+    }
+}

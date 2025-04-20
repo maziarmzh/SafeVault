@@ -1,0 +1,53 @@
+﻿@page "/input-validator"
+
+@inject SafeVault.Services.SanitizationService SanitizationService
+
+<h3>Input Validation</h3>
+<form @onsubmit.prevent>
+    <label>Username:</label>
+    <input @bind="username" @oninput="ValidateUsername" />
+    <p>@usernameMessage</p>
+
+    <label>Email:</label>
+    <input @bind="email" @oninput="ValidateEmail" />
+    <p>@emailMessage</p>
+</form>
+
+@code {
+    private string username;
+    private string email;
+    private string usernameMessage = string.Empty;
+    private string emailMessage = string.Empty;
+
+    private void ValidateUsername(ChangeEventArgs e)
+    {
+        var input = e.Value?.ToString();
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            usernameMessage = "Username cannot be empty";
+            return;
+        }
+
+        username = input;
+        var sanitized = SanitizationService.SanitizeInput(username);
+        usernameMessage = SanitizationService.IsValidUsername(sanitized)
+            ? "Valid username!"
+            : "Invalid username: Only alphanumeric characters allowed.";
+    }
+
+    private void ValidateEmail(ChangeEventArgs e)
+    {
+        var input = e.Value?.ToString();
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            emailMessage = "Email cannot be empty";
+            return;
+        }
+
+        email = input;
+        var sanitized = SanitizationService.SanitizeInput(email);
+        emailMessage = SanitizationService.IsValidEmail(sanitized)
+            ? "Valid email!"
+            : "Invalid email format.";
+    }
+}
